@@ -1,4 +1,4 @@
-name: Pipeline
+name: serverless-api-service
 
 on:
   push:
