@@ -17,19 +17,11 @@ env:
   DEV_PIPELINE_EXECUTION_ROLE: arn:aws:iam::311244688175:role/aws-sam-cli-managed-dev-pipe-PipelineExecutionRole-19Y9WLKFL79W5
   DEV_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::311244688175:role/aws-sam-cli-managed-dev-p-CloudFormationExecutionR-J75X1TP3OEDS
   DEV_ARTIFACTS_BUCKET: aws-sam-cli-managed-dev-pipeline-artifactsbucket-16b4hdx5qch1p
-  # If there are functions with "Image" PackageType in your template,
-  # uncomment the line below and add "--image-repository ${DEV_IMAGE_REPOSITORY}" to
-  # testing "sam package" and "sam deploy" commands.
-  # DEV_IMAGE_REPOSITORY = '0123456789.dkr.ecr.region.amazonaws.com/repository-name'
   AWS_REGION: eu-west-2
   PROD_STACK_NAME: serverless-api-uat
   PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::577522041346:role/aws-sam-cli-managed-uat-pipe-PipelineExecutionRole-1NNQ71LV3XFSD
   PROD_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::577522041346:role/aws-sam-cli-managed-uat-p-CloudFormationExecutionR-1865DPC6I680Y
   PROD_ARTIFACTS_BUCKET: aws-sam-cli-managed-uat-pipeline-artifactsbucket-25he3jf1ae7q
-  # If there are functions with "Image" PackageType in your template,
-  # uncomment the line below and add "--image-repository ${PROD_IMAGE_REPOSITORY}" to
-  # prod "sam package" and "sam deploy" commands.
-  # PROD_IMAGE_REPOSITORY = '0123456789.dkr.ecr.region.amazonaws.com/repository-name'
 
 jobs:
   test:
@@ -161,8 +153,9 @@ jobs:
           name: packaged-prod.yaml
           path: packaged-prod.yaml
 
-  deploy-testing:
+  deploy-dev:
     if: github.ref == 'refs/heads/main'
+    environment: dev
     needs: [build-and-package]
     runs-on: ubuntu-latest
     steps:
@@ -172,6 +165,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: packaged-testing.yaml
+
+      - name: Echo env vars
+        run: |
+          echo "ARTIFACTS_BUCKET: ${{ env.ARTIFACTS_BUCKET }}"
+          echo "CLOUDFORMATION_EXECUTION_ROLE: ${{ env.CLOUDFORMATION_EXECUTION_ROLE }}"
+          echo "PIPELINE_EXECUTION_ROLE: ${{ env.PIPELINE_EXECUTION_ROLE }}"
 
       - name: Assume the testing pipeline user role
         uses: aws-actions/configure-aws-credentials@v1
@@ -196,7 +195,7 @@ jobs:
 
   integration-test:
     if: github.ref == 'refs/heads/main'
-    needs: [deploy-testing]
+    needs: [deploy-dev]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -205,6 +204,7 @@ jobs:
 
   deploy-prod:
     if: github.ref == 'refs/heads/main'
+    environment: prod
     needs: [integration-test]
     runs-on: ubuntu-latest
     # Configure GitHub Action Environment to have a manual approval step before deployment to production
@@ -217,6 +217,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: packaged-prod.yaml
+
+      - name: Echo env vars
+        run: |
+          echo "ARTIFACTS_BUCKET: ${{ env.ARTIFACTS_BUCKET }}"
+          echo "CLOUDFORMATION_EXECUTION_ROLE: ${{ env.CLOUDFORMATION_EXECUTION_ROLE }}"
+          echo "PIPELINE_EXECUTION_ROLE: ${{ env.PIPELINE_EXECUTION_ROLE }}"
 
       - name: Assume the prod pipeline user role
         uses: aws-actions/configure-aws-credentials@v1
