@@ -39,7 +39,7 @@ exports.putItemHandler = async (event) => {
         statusCode: 200,
         body: JSON.stringify({
             ...body,
-            message: 'updated deployment'
+            message: 'this is the updated deployment'
         })
     };
 

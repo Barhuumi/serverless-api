@@ -21,7 +21,7 @@ describe('Test putItemHandler', function () {
  
     // This test invokes putItemHandler() and compare the result  
     it('should add id to the table', async () => { 
-        const returnedItem = { id: 'id1', name: 'name1', message: 'updated deployment' }; 
+        const returnedItem = { id: 'id1', name: 'name1', message: 'this is the updated deployment' }; 
  
         // Return the specified value whenever the spied put function is called 
         putSpy.mockReturnValue({ 
