@@ -223,6 +223,7 @@ jobs:
           echo "ARTIFACTS_BUCKET: ${{ env.ARTIFACTS_BUCKET }}"
           echo "CLOUDFORMATION_EXECUTION_ROLE: ${{ env.CLOUDFORMATION_EXECUTION_ROLE }}"
           echo "PIPELINE_EXECUTION_ROLE: ${{ env.PIPELINE_EXECUTION_ROLE }}"
+          echo "AWS_REGION: ${{ env.AWS_REGION }}"
 
       - name: Assume the prod pipeline user role
         uses: aws-actions/configure-aws-credentials@v1
