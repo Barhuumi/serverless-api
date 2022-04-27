@@ -168,9 +168,10 @@ jobs:
 
       - name: Echo env vars
         run: |
-          echo "ARTIFACTS_BUCKET: ${{ env.ARTIFACTS_BUCKET }}"
-          echo "CLOUDFORMATION_EXECUTION_ROLE: ${{ env.CLOUDFORMATION_EXECUTION_ROLE }}"
-          echo "PIPELINE_EXECUTION_ROLE: ${{ env.PIPELINE_EXECUTION_ROLE }}"
+          echo "ARTIFACTS_BUCKET: ${{ env.dev.ARTIFACTS_BUCKET }}"
+          echo "CLOUDFORMATION_EXECUTION_ROLE: ${{ env.dev.CLOUDFORMATION_EXECUTION_ROLE }}"
+          echo "PIPELINE_EXECUTION_ROLE: ${{ env.dev.PIPELINE_EXECUTION_ROLE }}"
+          echo "AWS_REGION: ${{ env.AWS_REGION }}"
 
       - name: Assume the testing pipeline user role
         uses: aws-actions/configure-aws-credentials@v1
